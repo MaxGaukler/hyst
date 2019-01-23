@@ -12,6 +12,8 @@ set -e
 set -o pipefail
 shopt -s failglob
 
+SCRIPT_PATH="$(readlink -f "$0")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
 
 # where should hyst and the tools be installed? Default: /opt
 HYST_PREFIX=${HYST_PREFIX:-/opt}
@@ -95,7 +97,7 @@ if ! [ "x$1" == "x--no-dependencies" ]; then
     tar xzf flowstar.tar.gz
     cd ${HYST_PREFIX}/tools/flowstar/flowstar-${FLOWSTAR_VERSION}/
     make
-    HYST_PATH="${HYST_PATH}:${HYST_PREFIX}/tools/flowstar/flowstar-${FLOWSTAR_VERSION}/"
+    MY_PATH="${MY_PATH}:${HYST_PREFIX}/tools/flowstar/flowstar-${FLOWSTAR_VERSION}/"
 
 
     ##################
@@ -112,7 +114,7 @@ if ! [ "x$1" == "x--no-dependencies" ]; then
     sha512sum spaceex.tar.gz | tee spaceex.sha512sum && grep -q "${SPACEEX_FILE_SHA512SUM}" spaceex.sha512sum
     tar xzf ./spaceex.tar.gz
     apt-get install -qy plotutils
-    HYST_PATH="${HYST_PATH}:${HYST_PREFIX}/tools/spaceex/spaceex_exe/"
+    MY_PATH="${MY_PATH}:${HYST_PREFIX}/tools/spaceex/spaceex_exe/"
     cd "${HYST_PREFIX}/tools/spaceex/spaceex_exe/"
     ./spaceex --version
 
@@ -133,7 +135,7 @@ if ! [ "x$1" == "x--no-dependencies" ]; then
     tar xzf dreach.tar.gz
     cd "${HYST_PREFIX}/tools/dreach/dReal-${DREAL_VERSION}-linux/"
     ls -l
-    HYST_PATH="${HYST_PATH}:${HYST_PREFIX}/tools/dreach/dReal-${DREAL_VERSION}-linux/bin"
+    MY_PATH="${MY_PATH}:${HYST_PREFIX}/tools/dreach/dReal-${DREAL_VERSION}-linux/bin"
     ./bin/dReach -h
 
     ##################
@@ -161,16 +163,17 @@ if ! [ "x$1" == "x--no-dependencies" ]; then
     # Set environment for Hyst
     
     MY_PYTHONPATH="${MY_PYTHONPATH}:${HYST_PREFIX}/hyst/src/hybridpy"
-    HYPYPATH="$HYPYPATH:/hyst/src"
-    MY_PATH="${MY_PATH}:/hyst"
+    HYPYPATH="$HYPYPATH:${HYST_PREFIX}/hyst/src"
+    MY_PATH="${MY_PATH}:${HYST_PREFIX}/hyst"
     
     # save environment variables to file
-    echo "export PATH=\"\$PATH:${HYST_PATH}\"" >> ${HYST_PREFIX}/environment
+    echo "export PATH=\"\$PATH:${MY_PATH}\"" >> ${HYST_PREFIX}/environment
     echo "export PYTHONPATH=\"\$PYTHONPATH:${MY_PYTHONPATH}\"" >> ${HYST_PREFIX}/environment
     echo "export HYPYPATH=\"\$HYPYPATH:${HYPYPATH}\"" >> ${HYST_PREFIX}/environment
     
     # automatically load environment variables on login
-    echo "source '${HYST_PREFIX}/environment'" >> /etc/environment
+    echo "source '${HYST_PREFIX}/environment'" >> /etc/profile.d/99-hyst.sh
+    chmod +x /etc/profile.d/99-hyst.sh
 fi
 
 if ! [ "x$1" == "x--only-dependencies" ]; then
@@ -181,8 +184,7 @@ if ! [ "x$1" == "x--only-dependencies" ]; then
 
     source ${HYST_PREFIX}/environment
     
-    SCRIPT_PATH="$(readlink -f "$0")"
-    ln -sf $(dirname "$SCRIPT_PATH")/ "${HYST_PREFIX}/hyst"
+    ln -sf "${SCRIPT_DIR}/" "${HYST_PREFIX}/hyst"
     cd "${HYST_PREFIX}/hyst/src"
     ant build
     # workaround: make directory accessible to all users, to simplify modifications of Hyst
