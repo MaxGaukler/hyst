@@ -181,7 +181,8 @@ if ! [ "x$1" == "x--only-dependencies" ]; then
 
     source ${HYST_PREFIX}/environment
     
-    ln -s $(dirname "$0")/ "${HYST_PREFIX}/hyst/"
+    SCRIPT_PATH="$(readlink -f "$0")"
+    ln -sf $(dirname "$SCRIPT_PATH")/ "${HYST_PREFIX}/hyst"
     cd "${HYST_PREFIX}/hyst/src"
     ant build
     # workaround: make directory accessible to all users, to simplify modifications of Hyst
