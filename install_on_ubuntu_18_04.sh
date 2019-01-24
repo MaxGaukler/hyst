@@ -173,7 +173,6 @@ if ! [ "x$1" == "x--no-dependencies" ]; then
     
     # automatically load environment variables on login
     echo "source '${HYST_PREFIX}/environment'" >> /etc/profile.d/99-hyst.sh
-    chmod +x /etc/profile.d/99-hyst.sh
 fi
 
 if ! [ "x$1" == "x--only-dependencies" ]; then
