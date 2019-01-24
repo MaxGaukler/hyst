@@ -23,3 +23,5 @@ TAGS
 .\#*
 src/.gitignore
 *junitvmwatcher*
+*.orig
+*.kate-swp
