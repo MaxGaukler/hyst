@@ -146,7 +146,7 @@ if ! [ "x$1" == "x--no-dependencies" ]; then
     HYCREATE_VERSION=2.81
     HYCREATE_FILE_SHA512SUM='e801d1fb01e112803f83a37d5339c802a638c2cd253d1a5b3794477f69d123ee243206561a51d99502d039f5cc5df859b14dc2c9fd236f58b67b83033d220ca9'
 
-    apt-get -qy install unzip
+    apt-get -qy install unzip openjdk-8-jdk-headless
     mkdir "${HYST_PREFIX}/tools/hycreate"
     cd "${HYST_PREFIX}/tools/hycreate"
 
@@ -156,9 +156,16 @@ if ! [ "x$1" == "x--no-dependencies" ]; then
     unzip hycreate.zip
     cd ${HYST_PREFIX}/tools/hycreate/HyCreate${HYCREATE_VERSION}/
     ls -l
-    HYPYPATH="$HYPYPATH:${HYST_PREFIX}/tools/hycreate/HyCreate${HYCREATE_VERSION}/"
+    MY_PATH="${MY_PATH}:${HYST_PREFIX}/tools/hycreate/HyCreate${HYCREATE_VERSION}/"
     # BUG (reported at https://github.com/verivital/hyst/issues/47 ): hypy expects HyCreate2.8.jar, not HyCreate 2.81.jar.
     test -f HyCreate2.8.jar || ln -s HyCreate*.jar HyCreate2.8.jar
+    # create startup file so that you can type "hycreate" on the terminal
+    cat <<- EOF > hycreate
+    #!/bin/bash
+    exec java -jar ${HYST_PREFIX}/tools/hycreate/HyCreate${HYCREATE_VERSION}/HyCreate2.8.jar "\$@"
+EOF
+# Note: the previous line must not be indented
+    chmod +x hycreate
     
     # Set environment for Hyst
     
@@ -172,7 +179,7 @@ if ! [ "x$1" == "x--no-dependencies" ]; then
     echo "export HYPYPATH=\"\$HYPYPATH:${HYPYPATH}\"" >> ${HYST_PREFIX}/environment
     
     # automatically load environment variables on login
-    echo "source '${HYST_PREFIX}/environment'" >> /etc/profile.d/99-hyst.sh
+    echo "source '${HYST_PREFIX}/environment'" > /etc/profile.d/99-hyst.sh
 fi
 
 if ! [ "x$1" == "x--only-dependencies" ]; then
