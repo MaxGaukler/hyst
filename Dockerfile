@@ -25,6 +25,7 @@ ENTRYPOINT ["/tmp/hyst/docker_entrypoint.sh"]
 # As default command: run the tests
 ##################
 
+WORKDIR /hyst/src
 CMD ant test
 
 # # USAGE:
