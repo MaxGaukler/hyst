@@ -146,7 +146,12 @@ if ! [ "x$1" == "x--no-dependencies" ]; then
     HYCREATE_VERSION=2.81
     HYCREATE_FILE_SHA512SUM='e801d1fb01e112803f83a37d5339c802a638c2cd253d1a5b3794477f69d123ee243206561a51d99502d039f5cc5df859b14dc2c9fd236f58b67b83033d220ca9'
 
-    apt-get -qy install unzip openjdk-8-jdk-headless
+    # HyCreate requires Java 8, doesn't work with Java 11. -> Uninstall the default Java version and install Java 8.
+    apt-get -qy install unzip openjdk-8-jdk-headless openjdk-11-\*-
+    # Work around a bug in Ubuntu 18.04's JDK8: "Assistive Technology not found ... AWTError"
+    # see https://askubuntu.com/questions/695560/assistive-technology-not-found-awterror
+    sed -i -e '/^assistive_technologies=/s/^/#/' /etc/java-*-openjdk/accessibility.properties
+    
     mkdir "${HYST_PREFIX}/tools/hycreate"
     cd "${HYST_PREFIX}/tools/hycreate"
 
