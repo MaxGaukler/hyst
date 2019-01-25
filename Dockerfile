@@ -19,7 +19,7 @@ RUN HYST_PREFIX=/ /tmp/hyst/install_on_ubuntu_18_04.sh --no-dependencies
 
 
 # load environment variables
-ENTRYPOINT /tmp/hyst/docker_entrypoint.sh
+ENTRYPOINT ["/tmp/hyst/docker_entrypoint.sh"]
 
 ##################
 # As default command: run the tests
