@@ -1,4 +1,4 @@
 #!/bin/sh
 # load environment variables
-source /hyst/environment
+source /hyst/hyst_environment
 exec "$@"

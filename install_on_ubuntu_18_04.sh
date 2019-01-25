@@ -38,7 +38,7 @@ mkdir -p ${HYST_PREFIX}
 if ! [ "x$1" == "x--no-dependencies" ]; then
     echo "Removing old installation"
     rm -rf ${HYST_PREFIX}/hyst ${HYST_PREFIX}/tools
-    echo > ${HYST_PREFIX}/environment
+    echo > ${HYST_PREFIX}/hyst_environment
     
     
     echo "Installing dependencies"
@@ -174,12 +174,12 @@ EOF
     MY_PATH="${MY_PATH}:${HYST_PREFIX}/hyst"
     
     # save environment variables to file
-    echo "export PATH=\"\$PATH:${MY_PATH}\"" >> ${HYST_PREFIX}/environment
-    echo "export PYTHONPATH=\"\$PYTHONPATH:${MY_PYTHONPATH}\"" >> ${HYST_PREFIX}/environment
-    echo "export HYPYPATH=\"\$HYPYPATH:${HYPYPATH}\"" >> ${HYST_PREFIX}/environment
+    echo "export PATH=\"\$PATH:${MY_PATH}\"" >> ${HYST_PREFIX}/hyst_environment
+    echo "export PYTHONPATH=\"\$PYTHONPATH:${MY_PYTHONPATH}\"" >> ${HYST_PREFIX}/hyst_environment
+    echo "export HYPYPATH=\"\$HYPYPATH:${HYPYPATH}\"" >> ${HYST_PREFIX}/hyst_environment
     
     # automatically load environment variables on login
-    echo "source '${HYST_PREFIX}/environment'" > /etc/profile.d/99-hyst.sh
+    echo "source '${HYST_PREFIX}/hyst_environment'" > /etc/profile.d/99-hyst.sh
 fi
 
 if ! [ "x$1" == "x--only-dependencies" ]; then
@@ -188,7 +188,7 @@ if ! [ "x$1" == "x--only-dependencies" ]; then
     # Install Hyst
     ##################
 
-    source ${HYST_PREFIX}/environment
+    source ${HYST_PREFIX}/hyst_environment
     
     ln -sf "${SCRIPT_DIR}/" "${HYST_PREFIX}/hyst"
     cd "${HYST_PREFIX}/hyst/src"
@@ -199,6 +199,6 @@ if ! [ "x$1" == "x--only-dependencies" ]; then
 fi
 
 echo "You need to log in and out again to load the required environment variables. Or run the following command:"
-echo "source '${HYST_PREFIX}/environment'"
+echo "source '${HYST_PREFIX}/hyst_environment'"
 echo ""
 echo "The tools are then available on the command line (hyst, spaceex, ...)."
