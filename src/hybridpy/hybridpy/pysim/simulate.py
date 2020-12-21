@@ -655,21 +655,21 @@ def _plot_sim_result_one(result, dim_x, dim_y, draw_events=True, mode_to_color=N
     # annotate events
     loc_index = 0
 
-    for event in events:
-        if draw_events:
+    if draw_events:
+        for event in events:
             loc_index = _annotate(event, dim_x, dim_y, loc_index)
-        
-        if event.color == 'red':
-            # draw a red 'x'
-            state = event.point
-            x = [state[dim_x]]
             
-            if isinstance(dim_y, int):
-                y = [state[dim_y]]
-            else:
-                y = [dim_y(state)]
+            if event.color == 'red':
+                # draw a red 'x'
+                state = event.point
+                x = [state[dim_x]]
+                
+                if isinstance(dim_y, int):
+                    y = [state[dim_y]]
+                else:
+                    y = [dim_y(state)]
 
-            plt.plot(x, y, 'xr')
+                plt.plot(x, y, 'xr')
 
 def interval_bounds_from_sim_result_multi(result_list):
     '''
